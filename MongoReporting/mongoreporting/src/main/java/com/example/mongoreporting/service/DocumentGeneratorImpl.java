@@ -50,7 +50,7 @@ public class DocumentGeneratorImpl implements DocumentGenerator {
 
         try {
 
-            PdfWriter.getInstance(document, new FileOutputStream("C:\\Users\\sarth\\Desktop\\Sarthak\\BITS-WILP\\Courses&Materials\\Sem3\\SS\\Assignment\\StudentData.pdf"));
+            PdfWriter.getInstance(document, new FileOutputStream("StudentData.pdf"));
 
             studentList = studentService.getAllStudents();
             courseList = courseService.getAllCourses();
