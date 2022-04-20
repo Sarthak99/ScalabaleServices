@@ -9,17 +9,18 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class DocumentGeneratorImpl implements DocumentGenerator {
 
     @Autowired
@@ -27,6 +28,9 @@ public class DocumentGeneratorImpl implements DocumentGenerator {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private S3Utility s3Utility;
 
     private void addTableHeader(PdfPTable table) {
         Stream.of("Student Name", "Course Name", "Course Description", "Instructor", "Student Updated")
@@ -50,7 +54,8 @@ public class DocumentGeneratorImpl implements DocumentGenerator {
 
         try {
 
-            PdfWriter.getInstance(document, new FileOutputStream("StudentData.pdf"));
+            String fileName = "StudentData_"+System.currentTimeMillis()+".pdf";
+            PdfWriter.getInstance(document, new FileOutputStream(fileName));
 
             studentList = studentService.getAllStudents();
             courseList = courseService.getAllCourses();
@@ -73,12 +78,26 @@ public class DocumentGeneratorImpl implements DocumentGenerator {
             }
             document.add(table);
             document.close();
+
+            File preparedFile = new File(fileName);
+            InputStream targetStream = new FileInputStream(preparedFile);
+
+            s3Utility.uploadFile(fileName,targetStream);
+            log.error("File processed to S3.");
+
+            if(preparedFile.delete()){
+                log.info(fileName + " delete successfully.");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("IO Exception:" + e.getMessage());
         } catch (DocumentException e) {
             e.printStackTrace();
+            log.error("DocumentException:" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
+            log.error("Exception:" + e.getMessage());
         }
     }
 }
