@@ -9,3 +9,4 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 public class StudentDBConfig {
     protected static final String MONGO_TEMPLATE = "studentMongoTemplate";
 }
+    

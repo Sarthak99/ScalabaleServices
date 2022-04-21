@@ -13,6 +13,6 @@ public class ReportGenerationWeb {
 
     @GetMapping("/studentreport")
     public void generateStudentReport(){
-        documentGenerator.generateReport();
+        documentGenerator.generateReport("123");
     }
 }

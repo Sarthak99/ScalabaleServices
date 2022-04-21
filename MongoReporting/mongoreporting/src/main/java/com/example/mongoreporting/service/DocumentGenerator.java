@@ -1,5 +1,5 @@
 package com.example.mongoreporting.service;
 
 public interface DocumentGenerator {
-    void generateReport();
+    void generateReport(String requestId);
 }
